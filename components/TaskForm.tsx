@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import DropDownPicker from "react-native-dropdown-picker";
 import { useSettings } from "../hooks/useSettings";
 import { Task } from "../types";
 import { databases } from "../utils/appwrite";
@@ -38,6 +39,21 @@ export default function TaskForm({
   const [dueDate, setDueDate] = useState(new Date());
   const [deadlineDate, setDeadlineDate] = useState(new Date());
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+    const [value, setValue] = useState(null);
+    const [items, setItems] = useState([
+      { label: "edukacja", value: "edukacja" },
+      { label: "praca", value: "praca" },
+      { label: "osobiste", value: "osobiste" },
+      { label: "aktywizm", value: "aktywizm" },
+      { label: "przyjaciele", value: "przyjaciele" },
+      { label: "zakupy", value: "zakupy" },
+      { label: "podróże", value: "podróże" },
+      { label: "dostawa", value: "dostawa" },
+      { label: "święta", value: "święta" },
+      { label: "inne", value: "inne" },
+    ]);
+
 
   const userOptions = settings?.users || [];
 
@@ -56,7 +72,7 @@ export default function TaskForm({
   const handleSubmit = async () => {
     if (!title) return;
     setLoading(true);
-
+    
     const nextStatus =
       forUser !== userEmail ? "waiting_for_acceptance" : "pending";
 
@@ -103,14 +119,17 @@ export default function TaskForm({
       <View style={styles.row}>
         <View style={styles.half}>
           <Text style={styles.label}>Kategoria:</Text>
-          <Picker selectedValue={category} onValueChange={setCategory} style={styles.input}>
-            {[
-              "edukacja", "praca", "osobiste", "aktywizm", "przyjaciele",
-              "zakupy", "podróże", "dostawa", "święta", "inne"
-            ].map((cat) => (
-              <Picker.Item key={cat} label={cat} value={cat} />
-            ))}
-          </Picker>
+          <DropDownPicker
+            open={open}
+            value={value}
+            items={items}
+            setOpen={setOpen}
+            setValue={setValue}
+            setItems={setItems}
+            placeholder="Wybierz kategorię"
+            style={{ borderColor: "#ccc" }}
+            dropDownContainerStyle={{ borderColor: "#ccc" }}
+          />
         </View>
 
         <View style={styles.half}>

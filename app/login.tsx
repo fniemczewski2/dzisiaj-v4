@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   ActivityIndicator,
   Animated,
@@ -13,12 +13,9 @@ import * as WebBrowser from 'expo-web-browser';
 
 WebBrowser.maybeCompleteAuthSession(); // ważne dla poprawnego działania redirectów
 
-
-
 export default function LoginScreen() {
-  const [loading, setLoading] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const { login } = useAuth();
+  const { login, loading } = useAuth();
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -29,15 +26,12 @@ export default function LoginScreen() {
   }, [fadeAnim]);
 
   const handleLogin = async () => {
-    setLoading(true);
     try {
-      login()
+      await login();          
     }
      catch (err) {
       console.error('Błąd logowania:', err);
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   return (
@@ -77,10 +71,10 @@ const styles = StyleSheet.create({
     padding: 16,
     alignSelf: 'center',
     shadowColor: 'rgba(0, 0, 0, 0.35)',
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 1,
-    shadowRadius: 10,
-    elevation: 6,
+    shadowRadius: 5,
+    elevation: 3,
   },
   infoText: {
     color: '#555',

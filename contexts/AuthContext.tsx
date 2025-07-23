@@ -1,109 +1,79 @@
-import { Account, Client, Models } from "appwrite";
-import { makeRedirectUri } from "expo-auth-session";
-import Constants from "expo-constants";
+// contexts/AuthContext.tsx
+import { GoogleSignin, isSuccessResponse } from "@react-native-google-signin/google-signin";
 import * as WebBrowser from "expo-web-browser";
 import React, {
-    createContext,
-    ReactNode,
-    useContext,
-    useEffect,
-    useState,
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState
 } from "react";
-import { Platform } from "react-native";
 
-type User = Models.User<Models.Preferences> | null;
+WebBrowser.maybeCompleteAuthSession();
+
+type User = {
+  name: string | null;
+  email: string | null;
+  picture?: string | null;
+} | null;
 
 interface AuthContextType {
   user: User;
   loading: boolean;
-  refresh: () => Promise<void>;
-  logout: () => Promise<void>;
   login: () => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
-  refresh: async () => {},
-  logout: async () => {},
   login: async () => {},
+  logout: async () => {},
 });
 
-const client = new Client()
-  .setEndpoint(Constants.expoConfig?.extra?.APPWRITE_ENDPOINT)
-  .setProject(Constants.expoConfig?.extra?.APPWRITE_PROJECT_ID);
-
-const account = new Account(client);
-
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User>(null);
-  const [loading, setLoading] = useState(true);
-
-  const fetchUser = async () => {
-    try {
-      const currentUser = await account.get();
-      setUser(currentUser);
-    } catch {
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const login = async () => {
-    try {
-        const redirectUri = makeRedirectUri({
-            scheme: "appwrite-callback-6877e1290006c3e6b744",
-            native: "appwrite-callback-6877e1290006c3e6b744://auth/callback",
-        });
-
-        const loginUrl = `https://fra.cloud.appwrite.io/v1/account/sessions/oauth2?provider=google&success=${encodeURIComponent(
-            redirectUri
-        )}&failure=${encodeURIComponent(redirectUri)}`;
-
-        if (Platform.OS === "web") {
-            // Dla Web przekieruj pełną stronę (wtedy cookie zostanie zapisane!)
-            window.location.href = loginUrl;
-            } else {
-            // Android/iOS – zachowaj WebBrowser.openAuthSessionAsync
-            const result = await WebBrowser.openAuthSessionAsync(loginUrl, redirectUri);
-            if (result.type === "success" && result.url) {
-                await fetchUser();
-            }
-            else {
-            throw new Error("Logowanie przerwane przez użytkownika");
-            }
-        }
-    } catch (err) {
-      console.error("Błąd logowania:", err);
-      throw err;
-    }
-  };
-  const refresh = async () => {
-    setLoading(true);
-    await fetchUser();
-  };
-
-  const logout = async () => {
-    try {
-      await account.deleteSession("current");
-    } catch {
-      // nieistniejąca sesja to też sukces
-    } finally {
-      await refresh();
-    }
-  };
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetchUser();
+    GoogleSignin.configure({
+      iosClientId: "1076392100281-n2d5mlcbtfnro5bn92lr2lu2f7qnbkns.apps.googleusercontent.com",
+      webClientId: "1076392100281-v84uu4n5ghotff7cjvrd1um6vtoug3up.apps.googleusercontent.com"
+    })
   }, []);
 
+  const login = async () => {
+    setLoading(true);
+    try {
+      await GoogleSignin.hasPlayServices();
+      const response = await GoogleSignin.signIn();
+      if (isSuccessResponse(response)){
+        const { user } = response.data;
+        setUser({
+          name: user.name ?? null,
+          email: user.email ?? null,
+          picture: user.photo ?? null,
+        });
+      }
+    }
+    catch (err) {
+      console.error('Błąd logowania:', err);
+    }
+    finally {
+      setLoading(false);
+    }
+  }
+  
+  const logout = async () => {
+    GoogleSignin.signOut();
+    setUser(null);
+  }
+
   return (
-    <AuthContext.Provider value={{ user, loading, refresh, logout, login }}>
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// 🔄 Hook do używania kontekstu
 export const useAuth = () => useContext(AuthContext);

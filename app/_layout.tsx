@@ -1,9 +1,9 @@
 import Header from "@/components/Header";
 import BottomNavbarMobile from "@/components/Navbar";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import { Slot } from "expo-router";
+import { Slot, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   StyleSheet,
   View
@@ -14,7 +14,6 @@ import {
 } from "react-native-safe-area-context";
 import LoginScreen from "./login";
 
-// Wrapper to apply correct safe area handling
 function AppContainer({ children }: { children: React.ReactNode }) {
 
   return (
@@ -26,6 +25,11 @@ function AppContainer({ children }: { children: React.ReactNode }) {
 
 export default function RootLayout() {
  const { user } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user) router.replace("/tasks");
+  }, [user, router]);
 
   return (
     <SafeAreaProvider>
@@ -33,7 +37,7 @@ export default function RootLayout() {
         <StatusBar style="auto" />
         <AppContainer>
           <Header />
-            {!user ? <Slot /> : <LoginScreen/>}
+            {user ? <Slot /> : <LoginScreen/>}
             <View style={{ height: 64 }} />
           <BottomNavbarMobile />
         </AppContainer>

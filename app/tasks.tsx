@@ -41,11 +41,10 @@ export default function TasksScreen() {
   const userEmail = user?.email || "";
 
   const fetchTasks = useCallback(async () => {
-  if (!user) return;
   setLoading(true);
 
   try {
-    const filters = [Query.equal("user_email", user.email)];
+    const filters = [Query.equal("user_email", userEmail)];
 
     if (filter !== "all") {
       const offset = FILTER_OPTIONS.find((f) => f.value === filter)?.offset || 0;
@@ -65,7 +64,7 @@ export default function TasksScreen() {
   } finally {
     setLoading(false);
   }
-}, [user, filter]);
+}, [userEmail, filter]);
 
 
   useEffect(() => {
