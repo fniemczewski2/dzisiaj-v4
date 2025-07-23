@@ -21,7 +21,7 @@
       "autoIncrement": true,
       "channel": "production",
       "android": { "buildType": "app-bundle" },
-      "ios": { "enterpriseProvisioning": "universal" }
+      "ios": { "enterpriseProvisioning": "universal", "resourceClass": "m-medium"}
     }
   },
   "submit": {
