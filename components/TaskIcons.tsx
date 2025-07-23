@@ -148,10 +148,10 @@ export default function TaskIcons() {
               styles.button,
               done[key] && styles.activeButton,
               loading && styles.disabledButton,
-              width >= 768 && { flex: 1, maxWidth: 120}, 
+              width >= 768 ? { flex: 1, maxWidth: 120} : {height: 32}, 
             ]}
           >
-            <Icon size={[width >= 768 ? (24) : (20)]} strokeWidth={2} />
+            <Icon size={[width >= 768 ? (24) : (18)]} strokeWidth={2} color={done[key] ? "#195f22ff" : "#777" }/>
           </TouchableOpacity>
         ))
       }
@@ -172,23 +172,21 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: "row",
     flexWrap: "nowrap",
-    gap: 4,
+    gap: 6,
     justifyContent: "center",
-    marginBottom: 16,
+    marginBottom: 8,
     width: "100%",
   },
   button: {
     paddingVertical: 6,
     borderRadius: 12,
     backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#ccc",
     alignItems: "center",
     justifyContent: "center",
     height: 48,
     flex: 1,
     shadowColor: "#000",
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 2,
   },

@@ -29,15 +29,7 @@ export default ({ config }) => ({
       output: "server",
     },
 
-
     plugins: [
-      [
-        "@react-native-google-signin/google-signin",
-        {
-          iosUrlScheme:
-            "com.googleusercontent.apps.1076392100281-n2d5mlcbtfnro5bn92lr2lu2f7qnbkns",
-        },
-      ],
       "expo-web-browser",
     ],
 

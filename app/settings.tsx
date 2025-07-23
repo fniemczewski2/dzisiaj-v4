@@ -1,4 +1,5 @@
 
+import { Picker } from "@react-native-picker/picker";
 import * as Location from "expo-location";
 import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
@@ -123,7 +124,7 @@ export default function SettingsScreen() {
     router.replace("/login");
   };
 
-  if (loading) {
+  if (!loading) {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" />
@@ -131,24 +132,16 @@ export default function SettingsScreen() {
     );
   }
 
+
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.header}>Ustawienia</Text>
-
-      <Text style={styles.subHeader}>Sortowanie zadań</Text>
-      {["priority", "due_date", "alphabetical", "due_date_alphabetical"].map((val) => (
-        <TouchableOpacity
-          key={val}
-          style={[
-            styles.sortOption,
-            settings.sort_order === val && styles.activeOption,
-          ]}
-          onPress={() => setSettings((s) => ({ ...s, sort_order: val }))}
-        >
-          <Text>{val}</Text>
-        </TouchableOpacity>
+      <Text style={styles.subHeader}>Sortuj wg:</Text>
+      <Picker  onValueChange={() => setSettings((s) => ({ ...s}))} style={[styles.input, styles.picker]}>
+      {[{value: "priority", label: "priorytetu"}, {value: "due_date", label: "daty wykonania"}, {value: "alphabetical", label: "alfabetycznie"},{value: "due_date_alphabetical", label: "daty i alfabetycznie"}].map((o) => (
+        <Picker.Item key={o.value} label={o.label} value={o.value} />       
       ))}
-
+      </Picker>
       {[
         { key: "show_completed", label: "Pokaż wykonane zadania" },
         { key: "show_habits", label: "Pokaż nawyki" },
@@ -238,6 +231,9 @@ const styles = StyleSheet.create({
   activeOption: {
     borderColor: "#3b82f6",
     backgroundColor: "#e0edff",
+  },
+  picker: {
+    zIndex: 100,
   },
   row: {
     flexDirection: "row",

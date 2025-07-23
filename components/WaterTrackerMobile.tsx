@@ -65,8 +65,8 @@ export default function WaterTrackerMobile() {
   };
 
   return (
-    <View style={styles.container}>
-        <Feather name="droplet" size={24} color="#3b82f6" />
+    <View style={[styles.container, width >= 768 ? {height: 48} : {height: 24}]}>
+        <Feather name="droplet" size={22} color="#3b82f6" />
         <Slider
         value={water}
           onValueChange={handleChange}
@@ -92,12 +92,10 @@ export default function WaterTrackerMobile() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#fff",
-    borderColor:"#ccc",
-    borderWidth: 1,
     padding: 16,
     borderRadius: 12,
     shadowColor: "#000",
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 2,
     marginBottom: 16,
@@ -106,7 +104,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
-    maxWidth: 988
+    maxWidth: 1002
   },
   
   
@@ -114,6 +112,6 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontSize: 16,
     fontWeight: "500",
-    color: "#1f2937",
+    color: "#666",
   },
 });

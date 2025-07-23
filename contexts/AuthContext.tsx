@@ -1,11 +1,9 @@
 // contexts/AuthContext.tsx
-import { GoogleSignin, isSuccessResponse } from "@react-native-google-signin/google-signin";
 import * as WebBrowser from "expo-web-browser";
 import React, {
   createContext,
   ReactNode,
   useContext,
-  useEffect,
   useState
 } from "react";
 
@@ -35,26 +33,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    GoogleSignin.configure({
-      iosClientId: "1076392100281-n2d5mlcbtfnro5bn92lr2lu2f7qnbkns.apps.googleusercontent.com",
-      webClientId: "1076392100281-v84uu4n5ghotff7cjvrd1um6vtoug3up.apps.googleusercontent.com"
-    })
-  }, []);
 
   const login = async () => {
     setLoading(true);
     try {
-      await GoogleSignin.hasPlayServices();
-      const response = await GoogleSignin.signIn();
-      if (isSuccessResponse(response)){
-        const { user } = response.data;
-        setUser({
-          name: user.name ?? null,
-          email: user.email ?? null,
-          picture: user.photo ?? null,
-        });
+      setUser({
+        name: "fniemczewski",
+        email: "f.niemczewski2@gmail.com"
       }
+      )
     }
     catch (err) {
       console.error('Błąd logowania:', err);
@@ -65,7 +52,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
   
   const logout = async () => {
-    GoogleSignin.signOut();
     setUser(null);
   }
 

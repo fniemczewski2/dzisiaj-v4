@@ -10,7 +10,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import DropDownPicker from "react-native-dropdown-picker";
 import { useSettings } from "../hooks/useSettings";
 import { Task } from "../types";
 import { databases } from "../utils/appwrite";
@@ -39,9 +38,7 @@ export default function TaskForm({
   const [dueDate, setDueDate] = useState(new Date());
   const [deadlineDate, setDeadlineDate] = useState(new Date());
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
-    const [value, setValue] = useState(null);
-    const [items, setItems] = useState([
+    const items= [
       { label: "edukacja", value: "edukacja" },
       { label: "praca", value: "praca" },
       { label: "osobiste", value: "osobiste" },
@@ -52,7 +49,7 @@ export default function TaskForm({
       { label: "dostawa", value: "dostawa" },
       { label: "święta", value: "święta" },
       { label: "inne", value: "inne" },
-    ]);
+    ];
 
 
   const userOptions = settings?.users || [];
@@ -109,7 +106,7 @@ export default function TaskForm({
       <TextInput style={styles.input} value={title} onChangeText={setTitle} />
 
       <Text style={styles.label}>Dla:</Text>
-      <Picker selectedValue={forUser} onValueChange={setForUser} style={styles.input}>
+      <Picker selectedValue={forUser} onValueChange={setForUser} style={[styles.input, styles.picker]}>
         <Picker.Item label="mnie" value={userEmail} />
         {userOptions.map((email) => (
           <Picker.Item key={email} label={email} value={email} />
@@ -119,17 +116,16 @@ export default function TaskForm({
       <View style={styles.row}>
         <View style={styles.half}>
           <Text style={styles.label}>Kategoria:</Text>
-          <DropDownPicker
-            open={open}
-            value={value}
-            items={items}
-            setOpen={setOpen}
-            setValue={setValue}
-            setItems={setItems}
+          <Picker
             placeholder="Wybierz kategorię"
-            style={{ borderColor: "#ccc" }}
-            dropDownContainerStyle={{ borderColor: "#ccc" }}
-          />
+            style={[styles.input, styles.picker]}
+          >
+          <Picker.Item label="mnie" value={userEmail} />
+        {items.map((i) => (
+          <Picker.Item key={i.label} label={i.label} value={i.value} />
+
+        ))}
+        </Picker>
         </View>
 
         <View style={styles.half}>
@@ -213,6 +209,9 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 8,
     padding: 8,
+  },
+  picker: {
+    zIndex: 100,
   },
   textarea: {
     height: 80,
